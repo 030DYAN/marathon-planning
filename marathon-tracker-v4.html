@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>衝了啦 🏃‍♀️</title>
+<style>
+:root{
+  --bg:#f3f1ec;--bg2:#fff;--bg3:#ece9e2;--brd:rgba(0,0,0,.08);
+  --text:#1c1a26;--muted:#706d88;--dim:#b4b0c8;
+  --green:#1e8c48;--blue:#2858b8;--pink:#b03256;--amber:#8e5210;--red:#c02828;
+  --glit:#e5f5ec;--blit:#e4edfb;--plit:#fce7ee;--alit:#fcf0e0;--rlit:#fce8e8;
+  --r:13px;--rs:8px;
+  --c-future:#e2dfd6;
+  --c-0r:#b82020;
+  --c-1:#ffe555;--c-2:#7dd87d;--c-3:#1e8c48;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',system-ui,sans-serif;min-height:100vh}
+body{padding-bottom:72px;max-width:480px;margin:0 auto}
+/* NAV */
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:var(--bg2);border-top:1px solid var(--brd);display:flex;z-index:100;box-shadow:0 -1px 8px rgba(0,0,0,.07)}
+.nb{flex:1;padding:10px 0 8px;text-align:center;cursor:pointer;border:none;background:none;color:var(--muted);font-size:10px;font-family:inherit;transition:color .15s}
+.nb.on{color:var(--green);font-weight:700}
+.ni{font-size:17px;display:block;margin-bottom:2px}
+/* PANELS */
+.pnl{display:none;padding:0 15px;animation:fi .18s ease}
+.pnl.on{display:block}
+@keyframes fi{from{opacity:0;transform:translateY(3px)}to{opacity:1}}
+/* CARDS */
+.card{background:var(--bg2);border:1px solid var(--brd);border-radius:var(--r);padding:13px 15px;margin-bottom:9px;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.ct{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.6px;text-transform:uppercase;margin-bottom:10px}
+.sec{font-size:11px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--dim);margin:16px 0 8px;display:flex;align-items:center;justify-content:space-between}
+/* HEADER */
+.hdr{padding:18px 15px 10px;display:flex;justify-content:space-between;align-items:flex-start}
+.hdr-g{font-size:12px;color:var(--muted)}
+.hdr-t{font-size:22px;font-weight:800;letter-spacing:-.5px;margin-top:2px}
+.wkb{background:var(--bg3);border:1px solid var(--brd);border-radius:20px;padding:4px 12px;font-size:12px;color:var(--muted)}
+/* PHASE */
+.pb{border-radius:var(--r);padding:11px 14px;margin-bottom:9px;border:1px solid}
+.pb.m{background:var(--plit);border-color:#d04070}
+.pb.f{background:var(--blit);border-color:#4070d0}
+.pb.o{background:var(--glit);border-color:#20a050}
+.pb.l{background:var(--alit);border-color:#d07030}
+.pb-t{font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px;margin-bottom:3px}
+.pb-s{font-size:12px;line-height:1.5;color:var(--muted)}
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+/* ALERTS */
+.al{border-radius:var(--r);padding:10px 13px;margin-bottom:8px;border-left:3px solid}
+.al.i{background:var(--blit);border-color:#4070d0;color:var(--blue)}
+.al.p{background:var(--plit);border-color:#d04070;color:var(--pink)}
+.al.s{background:var(--glit);border-color:#20a050;color:var(--green)}
+.al.w{background:var(--alit);border-color:#d07030;color:var(--amber)}
+.al-t{font-size:12px;font-weight:700;margin-bottom:2px}
+.al-s{font-size:12px;line-height:1.5;opacity:.85}
+/* DAY CELLS */
+.dc{width:15px;height:15px;border-radius:3px;position:relative;overflow:hidden;cursor:pointer;border:1px solid var(--brd);background:var(--bg2);flex-shrink:0}
+.dc:hover{transform:scale(1.4);z-index:5}
+.dc.future{background:var(--c-future);border-color:transparent}
+.dc.today::after{content:'';position:absolute;inset:0;box-shadow:inset 0 0 0 2px var(--text);border-radius:2px;z-index:3}
+.dc.s0{background:var(--c-0r);border-color:var(--c-0r);display:flex;align-items:center;justify-content:center;color:#fff;font-size:9px;font-weight:900;line-height:1}
+.dc-fill{position:absolute;bottom:0;left:0;right:0;border-radius:0 0 2px 2px}
+/* WORKOUT */
+.wo{display:flex;align-items:center;gap:10px;background:var(--bg3);border-radius:var(--rs);padding:10px 12px;cursor:pointer;border:1px solid transparent;margin-bottom:7px;transition:border-color .15s}
+.wo.done{border-color:var(--green);background:var(--glit)}
+.wo.done .wn{text-decoration:line-through;color:var(--muted)}
+.wchk{width:21px;height:21px;border-radius:50%;border:1.5px solid var(--dim);display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0}
+.wo.done .wchk{background:var(--green);border-color:var(--green);color:#fff}
+/* MACRO */
+.mp-item{margin-bottom:9px}
+.mp-top{display:flex;justify-content:space-between;margin-bottom:4px;font-size:12px}
+.mpb{height:6px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.mpf{height:100%;border-radius:3px;transition:width .4s}
+/* TOGGLE */
+.tog{display:flex;background:var(--bg3);border-radius:var(--rs);padding:3px;gap:3px;margin-bottom:12px}
+.togb{flex:1;padding:7px;text-align:center;border-radius:6px;font-size:12px;cursor:pointer;border:none;background:none;color:var(--muted);font-family:inherit;transition:all .15s}
+.togb.on{background:var(--bg2);color:var(--text);font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+/* FORMS */
+.inp{width:100%;background:var(--bg3);border:1px solid var(--brd);border-radius:var(--rs);padding:9px 12px;color:var(--text);font-size:14px;font-family:inherit;margin-bottom:9px;-webkit-appearance:none}
+.inp:focus{outline:none;border-color:var(--green);background:var(--bg2)}
+.lbl{font-size:12px;color:var(--muted);margin-bottom:5px;display:block}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.r3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.btn{border:none;border-radius:var(--rs);padding:10px 14px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s}
+.btn-g{background:var(--green);color:#fff;width:100%}
+.btn-sm{background:var(--bg3);color:var(--muted);font-size:12px;padding:5px 11px;border-radius:20px}
+.btn-del{background:var(--rlit);color:var(--red);font-size:12px;padding:5px 10px;border-radius:20px;border:1px solid #f0c0c0}
+/* RUN LOG */
+.rc{background:var(--blit);border-radius:var(--rs);padding:11px 13px;margin-bottom:7px;border-left:3px solid var(--blue)}
+.rc-r{display:flex;justify-content:space-between;margin-bottom:5px}
+.rc-title{font-size:13px;font-weight:700}
+.rc-stats{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.rc-stats span{color:var(--text);font-weight:600}
+/* ACTIVITY BLOCKS */
+.ac-pilates{background:var(--plit);border-left:3px solid var(--pink)}
+.ac-yoga{background:var(--alit);border-left:3px solid var(--amber)}
+.ac-gym{background:var(--glit);border-left:3px solid var(--green)}
+.ac-badminton{background:var(--blit);border-left:3px solid #4490e0}
+.ac-other{background:var(--bg3);border-left:3px solid var(--dim)}
+.ac{border-radius:var(--rs);padding:10px 13px;margin-bottom:7px}
+/* FOOD */
+.fsw{position:relative;margin-bottom:9px}
+.fdrop{position:absolute;top:100%;left:0;right:0;background:var(--bg2);border:1px solid var(--brd);border-top:none;border-radius:0 0 var(--rs) var(--rs);z-index:50;max-height:200px;overflow-y:auto;display:none;box-shadow:0 4px 12px rgba(0,0,0,.1)}
+.fdrop.open{display:block}
+.fopt{padding:9px 12px;cursor:pointer;border-bottom:1px solid var(--brd);transition:background .1s}
+.fopt:last-child{border-bottom:none}
+.fopt:active,.fopt:hover{background:var(--bg3)}
+.fo-n{font-size:13px;font-weight:500}
+.fo-i{font-size:11px;color:var(--muted);margin-top:1px}
+.food-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--brd);font-size:13px}
+.food-row:last-child{border-bottom:none}
+/* STATS */
+.sg{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:10px}
+.sp{background:var(--bg3);border-radius:var(--rs);padding:10px 7px;text-align:center}
+.sp-v{font-size:22px;font-weight:800}
+.sp-u{font-size:10px;color:var(--muted)}
+.sp-l{font-size:10px;color:var(--muted);margin-top:2px}
+.sp-e{font-size:10px;color:var(--blue);cursor:pointer;margin-top:3px;display:block}
+/* CHART */
+.chart-tog{display:flex;background:var(--bg3);border-radius:var(--rs);padding:3px;gap:3px;margin-bottom:8px}
+/* PERIOD */
+.p-row{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--brd);align-items:flex-start}
+.p-row:last-child{border-bottom:none}
+/* KNOWLEDGE */
+.kc{background:var(--bg3);border-radius:var(--rs);padding:11px 13px;margin-bottom:7px}
+.kc-h{display:flex;align-items:center;justify-content:space-between;cursor:pointer}
+.kc-t{font-size:13px;font-weight:600}
+.kc-b{font-size:12px;color:var(--muted);line-height:1.8;margin-top:8px;display:none}
+.kc-b.open{display:block}
+/* SLEEP */
+.sq{width:36px;height:36px;border-radius:50%;border:1.5px solid var(--brd);display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer;background:var(--bg3);font-weight:700;transition:all .15s}
+.sq.on{background:var(--blue);border-color:var(--blue);color:#fff}
+.sl-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--brd);font-size:13px}
+.sl-row:last-child{border-bottom:none}
+/* DIET TIP */
+.dtip{border-radius:var(--r);padding:11px 14px;margin-bottom:11px;border:1px solid}
+.dtip.train{background:var(--glit);border-color:#20a050}
+.dtip.rest{background:var(--blit);border-color:#4070d0}
+.dtip.period{background:var(--plit);border-color:#d04070}
+.dt-h{font-size:12px;font-weight:700;margin-bottom:4px}
+.dt-b{font-size:12px;color:var(--muted);line-height:1.7}
+.pbar{height:5px;background:var(--bg3);border-radius:3px;overflow:hidden;margin-top:5px}
+.pfill{height:100%;background:var(--green);border-radius:3px;transition:width .5s}
+.div{height:1px;background:var(--brd);margin:10px 0}
+/* SCHEDULE PLAN */
+.sched-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--brd)}
+.sched-row:last-child{border-bottom:none}
+.sched-day{font-size:12px;font-weight:700;width:24px;flex-shrink:0}
+.sched-acts{display:flex;flex-wrap:wrap;gap:5px;flex:1}
+.tag{display:inline-block;font-size:10px;font-weight:600;padding:3px 8px;border-radius:20px}
+.t-run{background:var(--blit);color:var(--blue)}
+.t-long{background:#d5efd5;color:#1e8c48;font-weight:800}
+.t-gym{background:var(--glit);color:var(--green)}
+.t-pilates{background:var(--plit);color:var(--pink)}
+.t-yoga{background:var(--alit);color:var(--amber)}
+.t-bad{background:#e4f0fc;color:#3070c0}
+.t-period{background:var(--rlit);color:var(--red)}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div><div class="hdr-g" id="greet"></div><div class="hdr-t">衝了啦 🏃‍♀️</div></div>
+  <div class="wkb" id="wkB">—</div>
+</div>
+
+<!-- TODAY -->
+<div id="pnl-today" class="pnl on">
+  <div id="phaseArea"></div>
+  <div class="card" style="display:flex;justify-content:space-between;align-items:center">
+    <div><div style="font-size:12px;color:var(--muted)">距離比賽 9/20</div>
+    <div style="font-size:22px;font-weight:800;color:var(--green)" id="daysLeft">—</div></div>
+    <div style="text-align:right"><div style="font-size:11px;color:var(--muted)" id="progLbl"></div>
+    <div class="pbar" style="width:110px;margin-top:5px"><div class="pfill" id="progFill"></div></div></div>
+  </div>
+  <div id="alertArea"></div>
+  <div class="sec">今日課表</div>
+  <div id="todayWo"></div>
+  <div class="sec">飲食進度</div>
+  <div class="card" id="macroCard"></div>
+  <div class="sec">訓練品質</div>
+  <div class="card">
+    <div style="font-size:11px;color:var(--muted);margin-bottom:8px">每格依完成度填滿（課表✓ + 飲食✓ + 睡眠✓ = 3格）</div>
+    <div id="dayGrid"></div>
+    <div style="display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap;font-size:10px;color:var(--muted)">
+      圖例：
+      <div style="display:flex;align-items:center;gap:3px"><div style="width:11px;height:11px;border-radius:2px;background:var(--c-future)"></div>未來</div>
+      <div style="display:flex;align-items:center;gap:3px"><div style="width:11px;height:11px;border-radius:2px;background:var(--c-0r);display:flex;align-items:center;justify-content:center;color:#fff;font-size:7px;font-weight:900">✕</div>無記錄</div>
+      <div style="display:flex;align-items:center;gap:3px"><div style="width:11px;height:11px;border-radius:2px;border:1px solid var(--brd);background:linear-gradient(to top, var(--c-1) 33%, var(--bg3) 33%)"></div>1項</div>
+      <div style="display:flex;align-items:center;gap:3px"><div style="width:11px;height:11px;border-radius:2px;border:1px solid var(--brd);background:linear-gradient(to top, var(--c-2) 67%, var(--bg3) 67%)"></div>2項</div>
+      <div style="display:flex;align-items:center;gap:3px"><div style="width:11px;height:11px;border-radius:2px;background:var(--c-3)"></div>完整</div>
+    </div>
+  </div>
+</div>
+
+<!-- SCHEDULE -->
+<div id="pnl-schedule" class="pnl">
+  <div class="sec">本週課表<button class="btn btn-sm" onclick="toggleNotes()">📝 備注</button></div>
+  <div id="notesWrap" style="display:none">
+    <div class="card">
+      <label class="lbl">本週備注（旅行、比賽、特殊安排...）</label>
+      <textarea class="inp" id="weekNote" rows="2" placeholder="例：本週出差，週六長跑改室內跑步機..."></textarea>
+      <button class="btn btn-g" onclick="saveNote()">儲存</button>
+    </div>
+  </div>
+  <div class="card" id="weekSched"></div>
+  <div class="sec" style="margin-top:16px">
+    <span>活動日誌</span>
+    <div style="display:flex;gap:5px">
+      <button class="btn btn-sm" onclick="showF('runF')">🏃 跑步</button>
+      <button class="btn btn-sm" onclick="showF('actF')">⚡ 其他</button>
+    </div>
+  </div>
+  <!-- RUN FORM -->
+  <div id="runF" style="display:none">
+    <div class="card" style="border:1.5px solid var(--blue)">
+      <div class="ct" style="color:var(--blue)">跑步記錄</div>
+      <div class="r2">
+        <div><label class="lbl">日期</label><input type="date" class="inp" id="rf-d"></div>
+        <div><label class="lbl">類型</label><select class="inp" id="rf-t"><option value="easy">輕鬆跑</option><option value="tempo">節奏跑</option><option value="long">長跑</option><option value="interval">間歇</option></select></div>
+      </div>
+      <div class="r2">
+        <div><label class="lbl">距離 (km)</label><input type="number" step="0.1" class="inp" id="rf-km" placeholder="5.0"></div>
+        <div><label class="lbl">時間 (分鐘)</label><input type="number" class="inp" id="rf-m" placeholder="30"></div>
+      </div>
+      <div class="r2">
+        <div><label class="lbl">平均心率 bpm</label><input type="number" class="inp" id="rf-hr" placeholder="150"></div>
+        <div><label class="lbl">體感強度</label><div id="rs" style="display:flex;gap:4px;margin-top:7px">
+          <span style="font-size:18px;cursor:pointer" onclick="se(1)">☆</span><span style="font-size:18px;cursor:pointer" onclick="se(2)">☆</span><span style="font-size:18px;cursor:pointer" onclick="se(3)">☆</span><span style="font-size:18px;cursor:pointer" onclick="se(4)">☆</span><span style="font-size:18px;cursor:pointer" onclick="se(5)">☆</span>
+        </div></div>
+      </div>
+      <label class="lbl">心得</label>
+      <textarea class="inp" id="rf-n" rows="2" placeholder="感受、突破、天氣、身體狀況..."></textarea>
+      <div class="r2"><button class="btn" style="background:var(--bg3);color:var(--muted)" onclick="hideF('runF')">取消</button><button class="btn btn-g" onclick="saveRun()">儲存</button></div>
+    </div>
+  </div>
+  <!-- ACT FORM -->
+  <div id="actF" style="display:none">
+    <div class="card" style="border:1.5px solid var(--green)">
+      <div class="ct" style="color:var(--green)">活動記錄</div>
+      <div class="r2">
+        <div><label class="lbl">日期</label><input type="date" class="inp" id="af-d"></div>
+        <div><label class="lbl">類型</label><select class="inp" id="af-t"><option value="pilates">皮拉提斯</option><option value="yoga">瑜珈</option><option value="gym">健身</option><option value="badminton">羽球</option><option value="other">其他</option></select></div>
+      </div>
+      <div class="r2">
+        <div><label class="lbl">時長 (分鐘)</label><input type="number" class="inp" id="af-m" placeholder="60"></div>
+        <div><label class="lbl">強度</label><div id="as" style="display:flex;gap:4px;margin-top:7px">
+          <span style="font-size:18px;cursor:pointer" onclick="sae(1)">☆</span><span style="font-size:18px;cursor:pointer" onclick="sae(2)">☆</span><span style="font-size:18px;cursor:pointer" onclick="sae(3)">☆</span><span style="font-size:18px;cursor:pointer" onclick="sae(4)">☆</span><span style="font-size:18px;cursor:pointer" onclick="sae(5)">☆</span>
+        </div></div>
+      </div>
+      <label class="lbl">備註</label>
+      <textarea class="inp" id="af-n" rows="2" placeholder="課程感受、進步點、不適..."></textarea>
+      <div class="r2"><button class="btn" style="background:var(--bg3);color:var(--muted)" onclick="hideF('actF')">取消</button><button class="btn btn-g" onclick="saveAct()">儲存</button></div>
+    </div>
+  </div>
+  <div id="actLogs"></div>
+</div>
+
+<!-- DIET -->
+<div id="pnl-diet" class="pnl">
+  <div class="tog">
+    <button class="togb on" onclick="setDT('train',this)">訓練日</button>
+    <button class="togb" onclick="setDT('rest',this)">休息日</button>
+    <button class="togb" onclick="setDT('period',this)">經期</button>
+  </div>
+  <div id="dietTip"></div>
+  <div class="card" id="dietTarget"></div>
+  <div class="sec"><span>今日飲食</span><button class="btn btn-sm" onclick="clearFood()">清除今日</button></div>
+  <div class="card">
+    <div class="fsw">
+      <input type="text" class="inp" id="fSrc" placeholder="搜尋食物（雞胸肉、白飯...）" autocomplete="off" style="margin-bottom:0">
+      <div class="fdrop" id="fDrop"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end;margin-top:9px">
+      <div><label class="lbl" id="qLbl">份量</label><input type="number" class="inp" id="fQty" placeholder="100" style="margin-bottom:0"></div>
+      <button class="btn btn-g" style="height:42px;padding:0 14px" onclick="addFood()">加入</button>
+    </div>
+  </div>
+  <div class="card" id="foodLog"></div>
+  <div class="sec"><span>新增食物至資料庫</span></div>
+  <div class="card">
+    <div class="r2">
+      <div><label class="lbl">食物名稱</label><input type="text" class="inp" id="nf-n" placeholder="例：水煮蛋白"></div>
+      <div><label class="lbl">基礎份量</label><input type="number" class="inp" id="nf-q" placeholder="100"></div>
+    </div>
+    <div><label class="lbl">單位</label><input type="text" class="inp" id="nf-u" placeholder="g / ml / 顆 / 片"></div>
+    <div class="r3">
+      <div><label class="lbl">碳水 (g)</label><input type="number" step="0.1" class="inp" id="nf-c" placeholder="0"></div>
+      <div><label class="lbl">蛋白質 (g)</label><input type="number" step="0.1" class="inp" id="nf-p" placeholder="0"></div>
+      <div><label class="lbl">油脂 (g)</label><input type="number" step="0.1" class="inp" id="nf-f" placeholder="0"></div>
+    </div>
+    <div><label class="lbl" id="calPreview" style="color:var(--green)">熱量將自動計算</label></div>
+    <button class="btn btn-g" onclick="addCustomFood()">新增至資料庫</button>
+  </div>
+  <div class="sec"><span>自訂食物</span><button class="btn btn-sm" id="customFoodToggle" onclick="toggleCustomFoods()">管理</button></div>
+  <div id="customFoodList" style="display:none"></div>
+</div>
+
+<!-- SLEEP -->
+<div id="pnl-sleep" class="pnl">
+  <div class="sec">記錄睡眠</div>
+  <div class="card">
+    <div class="r2">
+      <div><label class="lbl">入睡</label><input type="time" class="inp" id="sl-b" value="23:00"></div>
+      <div><label class="lbl">起床</label><input type="time" class="inp" id="sl-w" value="07:00"></div>
+    </div>
+    <label class="lbl">品質 (1=差 5=好)</label>
+    <div style="display:flex;gap:6px;margin-bottom:9px" id="sqrow">
+      <div class="sq" onclick="sSQ(1)">1</div><div class="sq" onclick="sSQ(2)">2</div><div class="sq" onclick="sSQ(3)">3</div><div class="sq" onclick="sSQ(4)">4</div><div class="sq" onclick="sSQ(5)">5</div>
+    </div>
+    <label class="lbl">備註</label>
+    <input type="text" class="inp" id="sl-n" placeholder="夢多、睡前滑手機、身體疲勞...">
+    <button class="btn btn-g" onclick="saveSleep()">儲存</button>
+  </div>
+  <div class="sec">睡眠記錄</div>
+  <div class="card" id="sleepLog"></div>
+  <div class="sec">睡眠建議</div>
+  <div class="card"><div style="font-size:13px;color:var(--muted);line-height:1.9">
+    目標 <strong style="color:var(--text)">7.5–9 小時</strong>，不足 6 小時當天降訓練強度。<br>
+    <strong style="color:var(--text)">睡前 60 分：</strong>調暗螢幕，不做激烈運動。<br>
+    <strong style="color:var(--text)">睡前 30 分：</strong>甘胺酸鎂 200mg 或靜態伸展。<br>
+    長跑前一晚不足 → 跑後補 20 分鐘小睡。
+  </div></div>
+</div>
+
+<!-- PERSONAL -->
+<div id="pnl-personal" class="pnl">
+  <div class="sec">我的數據</div>
+  <div class="sg" id="statsGrid"></div>
+  <div id="editStatWrap" style="display:none"><div class="card" id="editStatCard"></div></div>
+  <div class="sec">趨勢</div>
+  <div class="card">
+    <div class="chart-tog">
+      <button class="togb on" onclick="setChart('weight',this)">體重</button>
+      <button class="togb" onclick="setChart('bodyFat',this)">體脂</button>
+      <button class="togb" onclick="setChart('sleep',this)">睡眠</button>
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:6px" id="chartLbl">體重 (kg)</div>
+    <svg id="chartSvg" width="100%" height="100" style="overflow:visible"></svg>
+  </div>
+  <div class="sec"><span>月經記錄</span><button class="btn btn-sm" onclick="togglePF()">+ 新增</button></div>
+  <div id="pfWrap" style="display:none"><div class="card">
+    <label class="lbl">開始日期</label><input type="date" class="inp" id="pf-d">
+    <label class="lbl">經期天數</label><input type="number" class="inp" id="pf-dy" value="4">
+    <button class="btn btn-g" onclick="savePeriod()">儲存</button>
+  </div></div>
+  <div class="card" id="periodList"></div>
+  <div class="sec">心率區間</div>
+  <div class="card" id="hrZones"></div>
+  <div class="sec">知識庫</div>
+  <div id="knowBase"></div>
+</div>
+
+<nav class="nav">
+  <button class="nb on"  data-tab="today"    onclick="go('today',this)"><span class="ni">🏃</span>今日</button>
+  <button class="nb"     data-tab="schedule" onclick="go('schedule',this)"><span class="ni">📅</span>課表</button>
+  <button class="nb"     data-tab="diet"     onclick="go('diet',this)"><span class="ni">🥗</span>飲食</button>
+  <button class="nb"     data-tab="sleep"    onclick="go('sleep',this)"><span class="ni">💤</span>睡眠</button>
+  <button class="nb"     data-tab="personal" onclick="go('personal',this)"><span class="ni">👤</span>個人</button>
+</nav>
+
+<script>
+// ─── CONSTANTS ─────────────────────────────────────────────────────
+const TRAIN_START=new Date('2026-05-05'),RACE=new Date('2026-09-20'),RACE_STR='2026-09-20';
+const WEEK_PLAN=[
+  {name:'輕鬆跑+健身A',type:'run',sub:'4–6k輕鬆 + 下肢核心'},
+  {name:'皮拉提斯',type:'pilates',sub:'早上一小時'},
+  {name:'節奏跑+瑜珈',type:'run',sub:'5k節奏 + 晚瑜珈'},
+  {name:'健身B',type:'gym',sub:'上肢+核心'},
+  {name:'皮拉提斯',type:'pilates',sub:'早上一小時'},
+  {name:'長跑',type:'long',sub:'本週最長距離'},
+  {name:'羽球+伸展',type:'badminton',sub:'輕鬆活動+靜態伸展'},
+];
+const PHASE_INFO=[
+  {name:'月經期',range:'第1–4天',cls:'m',col:'#b03256',tip:'體力最低，改輕鬆走路或伸展，不強迫訓練。',train:'大幅降低'},
+  {name:'卵泡期',range:'第5–13天',cls:'f',col:'#2858b8',tip:'精力回升，對訓練適應最好，可適度增量。',train:'正常至略高'},
+  {name:'排卵期',range:'第14天前後',cls:'o',col:'#1e8c48',tip:'能量顛峰！最適合長跑或速度訓練日。',train:'本月最佳'},
+  {name:'黃體期',range:'第15–29天',cls:'l',col:'#8e5210',tip:'黃體素上升感覺較沉，維持訓練不追個人最佳。',train:'維持不追速'},
+];
+const DIET_TIPS={
+  train:{cls:'train',icon:'🔥',title:'訓練日飲食要點',body:'訓練後 30 分鐘內補充碳水+蛋白（3:1）最佳。雞胸肉 270g 以上。訓練前 30 分鐘吃香蕉補能。天氣熱時補電解質。'},
+  rest:{cls:'rest',icon:'💤',title:'休息日飲食要點',body:'碳水比訓練日少 35g，以蔬菜、豆類補足。蛋白質維持不變。肌肉修復仍在進行，避免大量零食。'},
+  period:{cls:'period',icon:'🌙',title:'經期飲食要點',body:'補鐵（菠菜、豬肝）、鎂（黑巧克力20g、堅果），少咖啡因改薑茶。腹部不適時少量多餐，避免冷飲。'},
+};
+const MACROS={train:{carb:165,prot:85,fat:47,kcal:1423},rest:{carb:130,prot:85,fat:50,kcal:1310},period:{carb:145,prot:85,fat:55,kcal:1415}};
+const BASE_FOODS=[
+  {name:'白飯',unit:'g（熟）',per:100,c:28,p:2.7,f:0.3,cal:130},
+  {name:'糙米飯',unit:'g（熟）',per:100,c:25,p:2.5,f:1.0,cal:120},
+  {name:'地瓜',unit:'g（熟）',per:100,c:20,p:1.6,f:0.1,cal:86},
+  {name:'燕麥',unit:'g（乾）',per:50,c:33,p:6.0,f:3.0,cal:190},
+  {name:'全麥吐司',unit:'片',per:1,c:15,p:3.0,f:1.0,cal:75},
+  {name:'雞胸肉',unit:'g（熟）',per:100,c:0,p:31,f:3.6,cal:165},
+  {name:'雞蛋',unit:'顆',per:1,c:0.4,p:6.3,f:5.0,cal:72},
+  {name:'鮭魚',unit:'g',per:100,c:0,p:20,f:13,cal:200},
+  {name:'板豆腐',unit:'g',per:100,c:2,p:8,f:4,cal:76},
+  {name:'無糖豆漿',unit:'ml',per:250,c:7,p:9,f:4,cal:98},
+  {name:'鮮奶',unit:'ml',per:200,c:9.8,p:6.6,f:7.6,cal:134},
+  {name:'希臘優格',unit:'g',per:150,c:8,p:15,f:3,cal:119},
+  {name:'香蕉',unit:'根',per:1,c:27,p:1.1,f:0.4,cal:105},
+  {name:'蘋果',unit:'顆',per:1,c:20,p:0.4,f:0.2,cal:78},
+  {name:'菠菜',unit:'g',per:100,c:3.6,p:2.9,f:0.4,cal:23},
+  {name:'花椰菜',unit:'g',per:100,c:7,p:2.8,f:0.4,cal:34},
+  {name:'橄欖油',unit:'匙',per:1,c:0,p:0,f:14,cal:119},
+  {name:'堅果',unit:'g',per:10,c:2,p:2,f:6,cal:60},
+  {name:'黑巧克力',unit:'g',per:20,c:12,p:2,f:7,cal:120},
+  {name:'能量膠',unit:'包',per:1,c:24,p:0,f:0,cal:96},
+  {name:'運動飲料',unit:'ml',per:500,c:30,p:0,f:0,cal:120},
+  {name:'雞腿（去皮）',unit:'g',per:100,c:0,p:27,f:5,cal:155},
+];
+
+// ─── UTILS ─────────────────────────────────────────────────────────
+const G=id=>document.getElementById(id);
+const today=()=>{const d=new Date();d.setHours(0,0,0,0);return d;};
+const db=(a,b)=>Math.round((b-a)/86400000);
+const ds=()=>today().toISOString().slice(0,10);
+const cw=()=>{const d=db(TRAIN_START,today());return d<0?0:Math.min(Math.floor(d/7)+1,20);};
+const dow=()=>{const d=today().getDay();return d===0?6:d-1;};
+const LS={
+  get(k,d=null){try{const v=localStorage.getItem(k);return v!==null?JSON.parse(v):d}catch{return d}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}},
+  del(k){localStorage.removeItem(k);}
+};
+function greet(){const h=new Date().getHours();return h<12?'早安 ☀️':h<17?'午安 🌤':'晚安 🌙';}
+function allFoods(){return[...BASE_FOODS,...LS.get('customFoods',[])];}
+
+// ─── CYCLE ─────────────────────────────────────────────────────────
+function getPeriods(){const s=LS.get('periods',[]);return s.length?s:[{date:'2026-04-24',days:4}];}
+function getLatest(){return getPeriods().reduce((a,b)=>new Date(b.date)>new Date(a.date)?b:a);}
+function getCycleDay(){const l=getLatest(),len=LS.get('cycleLen',29),d=db(new Date(l.date),today())%len;return d<0?d+len+1:d+1;}
+function getPhaseIdx(cd){const p=getLatest().days||4;return cd<=p?0:cd<=13?1:cd<=15?2:3;}
+function getNextPeriod(){const l=getLatest(),len=LS.get('cycleLen',29),cd=getCycleDay();const n=new Date(today());n.setDate(n.getDate()+(len-cd+1));return n;}
+
+// ─── DAY SCORE ─────────────────────────────────────────────────────
+function dayScore(dateStr){
+  const wo=LS.get('wo-'+dateStr,{}),food=LS.get('food-'+dateStr,[]),slp=LS.get('sleeplog',[]);
+  return (Object.values(wo).some(Boolean)?1:0)+(food.length>0?1:0)+(slp.some(s=>s.date===dateStr)?1:0);
+}
+
+// ─── DAY GRID ──────────────────────────────────────────────────────
+function renderDayGrid(){
+  const startDow=1,totalDays=db(TRAIN_START,RACE),weeks=Math.ceil((totalDays+startDow)/7);
+  const dStr=()=>ds();
+  const rows=['一','二','三','四','五','六','日'];
+  const fills=['',' var(--c-1)',' var(--c-2)',''];
+  const heights=[0,33,67,100];
+  let html=`<div style="display:flex;gap:2px"><div style="width:18px"></div>`;
+  for(let c=0;c<weeks;c++) html+=`<div style="width:15px;font-size:8px;color:var(--dim);text-align:center">${c+1}</div>`;
+  html+=`</div><div style="display:flex;gap:2px">`;
+  html+=`<div style="display:flex;flex-direction:column;gap:2px;margin-right:2px">`;
+  rows.forEach(r=>html+=`<div style="height:15px;font-size:8px;color:var(--dim);display:flex;align-items:center;width:16px">${r}</div>`);
+  html+=`</div>`;
+  for(let c=0;c<weeks;c++){
+    html+=`<div style="display:flex;flex-direction:column;gap:2px">`;
+    for(let r=0;r<7;r++){
+      const idx=c*7+r-startDow;
+      if(idx<0||idx>=totalDays){html+=`<div style="width:15px;height:15px"></div>`;continue;}
+      const d=new Date(TRAIN_START);d.setDate(d.getDate()+idx);
+      const dateStr=d.toISOString().slice(0,10);
+      const isT=dateStr===dStr();
+      const isFut=d>today();
+      if(isFut){html+=`<div class="dc future" title="${dateStr}"></div>`;continue;}
+      const sc=dayScore(dateStr);
+      if(sc===0){
+        html+=`<div class="dc s0${isT?' today':''}" title="${dateStr}">✕</div>`;
+      } else if(sc===3){
+        html+=`<div class="dc${isT?' today':''}" style="background:var(--c-3);border-color:var(--c-3)" title="${dateStr}"></div>`;
+      } else {
+        const h=heights[sc],bg=fills[sc];
+        html+=`<div class="dc${isT?' today':''}" style="background:var(--bg3)" title="${dateStr}"><div class="dc-fill" style="height:${h}%;background:${bg}"></div></div>`;
+      }
+    }
+    html+=`</div>`;
+  }
+  html+=`</div>`;
+  G('dayGrid').innerHTML=html;
+}
+
+// ─── RENDER TODAY ───────────────────────────────────────────────────
+function renderToday(){
+  G('greet').textContent=greet();
+  const wk=cw();G('wkB').textContent=wk>0?`第 ${wk} 週`:'訓練前';
+  renderDayGrid();
+  // Days to race
+  const dl=db(today(),RACE),tot=db(TRAIN_START,RACE);
+  G('daysLeft').textContent=`還有 ${dl} 天`;
+  G('progFill').style.width=Math.max(0,Math.min(100,(1-dl/tot)*100)).toFixed(0)+'%';
+  G('progLbl').textContent=`第 ${wk}/20 週 · ${((1-dl/tot)*100).toFixed(0)}%`;
+  // Phase
+  const cd=getCycleDay(),pi=getPhaseIdx(cd),ph=PHASE_INFO[pi];
+  G('phaseArea').innerHTML=`<div class="pb ${ph.cls}"><div class="pb-t"><div class="dot" style="background:${ph.col}"></div>週期第${cd}天 · ${ph.name}（${ph.range}）</div><div class="pb-s">${ph.tip}</div></div>`;
+  // Alerts
+  const alerts=[];const np=getNextPeriod(),dtp=db(today(),np);
+  if(wk>=7&&wk<=9&&dow()===5) alerts.push({t:'i',icon:'❤️',title:'最大心率測試週',sub:'週末考慮做最大心率測試：3分鐘全力衝刺後立即量心率，目前估計 186 bpm。'});
+  if(dtp>=0&&dtp<=3&&pi!==0) alerts.push({t:'p',icon:'🌙',title:`預計${dtp===0?'今天':dtp+'天後'}月經來`,sub:'補充鐵質和鎂，本週訓練強度做好調整準備。'});
+  if(dow()===5) alerts.push({t:'s',icon:'🏃',title:'今天是長跑日',sub:'確認補水、跑鞋狀態。跑前 30 分鐘吃香蕉，跑後補蛋白質。'});
+  if(wk>=18) alerts.push({t:'w',icon:'⏳',title:`收量期 W${wk}`,sub:'里程減 40%，維持配速不增量。充足休息比練習更重要。'});
+  G('alertArea').innerHTML=alerts.map(a=>`<div class="al ${a.t}"><div class="al-t">${a.icon} ${a.title}</div><div class="al-s">${a.sub}</div></div>`).join('');
+  // Today workout
+  const wp=WEEK_PLAN[dow()],woKey='wo-'+ds(),log=LS.get(woKey,{}),isPeriod=pi===0&&cd<=2;
+  const icons={run:'🏃‍♀️',pilates:'🧘‍♀️',long:'🏃‍♀️',gym:'🏋️‍♀️',yoga:'🧘‍♀️',badminton:'🏸',rest:'😴'};
+  const display=isPeriod?[{name:'輕鬆伸展/休息',type:'rest',sub:'不強迫訓練，散步或伸展即可'}]:[wp];
+  G('todayWo').innerHTML=display.map((w,i)=>{const k=String(i),done=!!log[k];return`<div class="wo ${done?'done':''}" onclick="toggleWo('${woKey}','${k}')"><div style="font-size:19px;width:28px;text-align:center">${icons[w.type]||'⚡'}</div><div style="flex:1"><div class="wn" style="font-size:14px;font-weight:600">${w.name}</div><div style="font-size:12px;color:var(--muted);margin-top:2px">${w.sub}</div></div><div class="wchk">${done?'✓':''}</div></div>`;}).join('');
+  // Macro progress
+  const dt=isPeriod?'period':(['run','gym','long'].includes(wp?.type)?'train':'rest');
+  const m=MACROS[dt],fl=getFoodTotals(ds());
+  G('macroCard').innerHTML=`<div class="ct">${{train:'🔥 訓練日',rest:'💤 休息日',period:'🌙 經期'}[dt]}</div>`
+    +[['碳水',fl.c,m.carb,'#2858b8'],['蛋白質',fl.p,m.prot,'#1e8c48'],['油脂',fl.f,m.fat,'#8e5210']].map(([l,v,t,c])=>`<div class="mp-item"><div class="mp-top"><span style="color:var(--muted)">${l}</span><span style="font-size:12px"><strong style="color:${c}">${v.toFixed(0)}</strong><span style="color:var(--dim)"> / ${t}g</span></span></div><div class="mpb"><div class="mpf" style="width:${Math.min(100,v/t*100).toFixed(0)}%;background:${c}"></div></div></div>`).join('')
+    +`<div style="font-size:11px;color:var(--muted);text-align:right;margin-top:6px">${Math.round(fl.cal)} / ${m.kcal} kcal</div>`;
+}
+function toggleWo(k,i){const l=LS.get(k,{});l[i]=!l[i];LS.set(k,l);renderToday();}
+
+// ─── SCHEDULE ──────────────────────────────────────────────────────
+let re=0,ae=0;
+function se(n){re=n;G('rs').querySelectorAll('span').forEach((s,i)=>s.textContent=i<n?'★':'☆');}
+function sae(n){ae=n;G('as').querySelectorAll('span').forEach((s,i)=>s.textContent=i<n?'★':'☆');}
+function showF(id){G(id).style.display='block';const di=id==='runF'?'rf-d':'af-d';G(di).value=ds();}
+function hideF(id){G(id).style.display='none';}
+function toggleNotes(){const w=G('notesWrap');w.style.display=w.style.display==='none'?'block':'none';if(w.style.display==='block')G('weekNote').value=LS.get('weekNote-'+cw(),'');}
+function saveNote(){LS.set('weekNote-'+cw(),G('weekNote').value);G('notesWrap').style.display='none';}
+function saveRun(){
+  const km=parseFloat(G('rf-km').value)||0,min=parseInt(G('rf-m').value)||0;
+  if(!km&&!min)return alert('請輸入距離或時間');
+  const pace=km&&min?`${Math.floor(min/km)}:${String(Math.round((min/km%1)*60)).padStart(2,'0')}`:'';
+  const logs=LS.get('actlog',[]);
+  logs.unshift({id:Date.now(),kind:'run',date:G('rf-d').value,type:G('rf-t').value,km,min,pace,hr:parseInt(G('rf-hr').value)||0,eff:re,note:G('rf-n').value.trim()});
+  LS.set('actlog',logs);hideF('runF');re=0;se(0);G('rf-km').value='';G('rf-m').value='';G('rf-hr').value='';G('rf-n').value='';
+  renderSchedule();
+}
+function saveAct(){
+  const logs=LS.get('actlog',[]);
+  logs.unshift({id:Date.now(),kind:'act',date:G('af-d').value,type:G('af-t').value,min:parseInt(G('af-m').value)||0,eff:ae,note:G('af-n').value.trim()});
+  LS.set('actlog',logs);hideF('actF');ae=0;sae(0);G('af-n').value='';
+  renderSchedule();
+}
+function delLog(id){if(!confirm('確定刪除？'))return;LS.set('actlog',LS.get('actlog',[]).filter(l=>l.id!==id));renderSchedule();}
+
+function renderSchedule(){
+  const days=['一','二','三','四','五','六','日'],d=dow(),cd=getCycleDay(),ip=getPhaseIdx(cd)===0&&cd<=2;
+  const tm={run:'t-run',gym:'t-gym',pilates:'t-pilates',yoga:'t-yoga',long:'t-long',badminton:'t-bad',rest:'t-period'};
+  const note=LS.get('weekNote-'+cw(),'');
+  G('weekSched').innerHTML=(note?`<div style="font-size:12px;color:var(--amber);background:var(--alit);border-radius:6px;padding:7px 10px;margin-bottom:10px">📝 ${note}</div>`:'')+WEEK_PLAN.map((w,i)=>{
+    const isRun=w.type==='run'||w.type==='long',isAct=!isRun;
+    const blocked=ip&&['run','gym','long','badminton'].includes(w.type);
+    return`<div class="sched-row"><div class="sched-day" style="color:${i===d?'var(--green)':'var(--muted)'}">${days[i]}</div>
+    <div class="sched-acts">
+      ${isRun?`<span class="tag t-run" style="background:var(--blit)">${blocked?'輕鬆伸展/休息':w.name}</span>`:''}
+      ${isAct?`<span class="tag t-${w.type}">${blocked?'輕鬆伸展':w.name}</span>`:''}
+      ${blocked?`<span class="tag t-period">經期</span>`:''}
+    </div></div>`;}).join('');
+
+  const logs=LS.get('actlog',[]);
+  const tl={easy:'輕鬆跑',tempo:'節奏跑',long:'長跑',interval:'間歇跑',pilates:'皮拉提斯',yoga:'瑜珈',gym:'健身',badminton:'羽球',other:'其他'};
+  const acls={pilates:'ac-pilates',yoga:'ac-yoga',gym:'ac-gym',badminton:'ac-badminton',other:'ac-other'};
+  if(!logs.length){G('actLogs').innerHTML='<div style="text-align:center;color:var(--dim);font-size:12px;padding:14px">尚無記錄</div>';return;}
+  const runs=logs.filter(l=>l.kind==='run');
+  let sum='';
+  if(runs.length>=2){const tk=runs.reduce((s,r)=>s+(r.km||0),0),th=(logs.reduce((s,l)=>s+(l.min||0),0)/60).toFixed(1);
+    sum=`<div class="card" style="display:flex;gap:0;text-align:center;margin-bottom:9px">${[['累計里程',tk.toFixed(1),'km','var(--blue)'],['跑步次數',runs.length,'次','var(--green)'],['總時數',th,'hrs','var(--amber)']].map(([l,v,u,c])=>`<div style="flex:1;padding:10px 0;border-right:1px solid var(--brd)"><div style="font-size:18px;font-weight:800;color:${c}">${v}</div><div style="font-size:10px;color:var(--muted)">${u} ${l}</div></div>`).join('')}</div>`;}
+  G('actLogs').innerHTML=sum+logs.slice(0,20).map(l=>{
+    const delBtn=`<span style="color:var(--red);cursor:pointer;font-size:13px;padding:2px 6px" onclick="delLog(${l.id})">✕</span>`;
+    if(l.kind==='run') return`<div class="rc"><div class="rc-r"><span class="rc-title">${tl[l.type]||'跑步'} ${'★'.repeat(l.eff||0)}</span><div style="display:flex;align-items:center;gap:4px"><span style="font-size:11px;color:var(--muted)">${l.date}</span>${delBtn}</div></div><div class="rc-stats">${l.km?`<span><span>${l.km}</span>km</span>`:''} ${l.min?`<span><span>${l.min}</span>分</span>`:''} ${l.pace?`<span>配速<span>${l.pace}</span>/km</span>`:''} ${l.hr?`<span>心率<span>${l.hr}</span>bpm</span>`:''}</div>${l.note?`<div style="font-size:12px;color:var(--muted);font-style:italic;margin-top:4px">"${l.note}"</div>`:''}</div>`;
+    return`<div class="ac ${acls[l.type]||'ac-other'}"><div style="display:flex;align-items:center;justify-content:space-between"><div><div style="font-size:13px;font-weight:700">${tl[l.type]} ${'★'.repeat(l.eff||0)}</div><div style="font-size:12px;color:var(--muted)">${l.date}${l.min?` · ${l.min}分`:''}${l.note?` · ${l.note}`:''}</div></div>${delBtn}</div></div>`;}).join('');
+}
+
+// ─── DIET ──────────────────────────────────────────────────────────
+let selF=null,dayType='train';
+function setDT(t,b){dayType=t;document.querySelectorAll('#pnl-diet .togb').forEach(x=>x.classList.remove('on'));b.classList.add('on');renderDiet();}
+function getFoodTotals(dateStr){return LS.get('food-'+dateStr,[]).reduce((s,e)=>({c:s.c+e.c,p:s.p+e.p,f:s.f+e.f,cal:s.cal+e.cal}),{c:0,p:0,f:0,cal:0});}
+function clearFood(){if(!confirm('清除今日飲食記錄？'))return;LS.del('food-'+ds());renderDiet();renderToday();}
+function delFood(id){LS.set('food-'+ds(),LS.get('food-'+ds(),[]).filter(e=>e.id!==id));renderDiet();renderToday();}
+
+// Food search
+(function setupFoodSearch(){
+  function init(){
+    const src=G('fSrc'),drop=G('fDrop');if(!src||!drop)return;
+    src.addEventListener('input',function(){
+      const q=this.value.trim();
+      if(!q){drop.classList.remove('open');drop.innerHTML='';return;}
+      const res=allFoods().map((f,i)=>({...f,i})).filter(f=>f.name.includes(q)).slice(0,8);
+      if(!res.length){drop.classList.remove('open');return;}
+      drop.innerHTML=res.map(f=>`<div class="fopt" data-i="${f.i}"><div class="fo-n">${f.name}</div><div class="fo-i">每${f.per}${f.unit} · 碳${f.c}g 蛋${f.p}g 脂${f.f}g · ${f.cal}kcal</div></div>`).join('');
+      drop.classList.add('open');
+    });
+    drop.addEventListener('click',function(e){
+      const opt=e.target.closest('.fopt');if(!opt)return;
+      const idx=parseInt(opt.dataset.i);selF=allFoods()[idx];
+      src.value=selF.name;G('fQty').value=selF.per;G('qLbl').textContent=`份量（${selF.unit}）`;
+      drop.classList.remove('open');drop.innerHTML='';e.stopPropagation();
+    });
+    document.addEventListener('click',e=>{if(!e.target.closest('.fsw')){drop.classList.remove('open');}});
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init);
+  else init();
+})();
+
+function addFood(){
+  if(!selF)return alert('請先搜尋並選擇食物');
+  const qty=parseFloat(G('fQty').value);if(!qty||qty<=0)return alert('請輸入有效份量');
+  const r=qty/selF.per,e={id:Date.now(),name:selF.name,qty,unit:selF.unit,c:+(selF.c*r).toFixed(1),p:+(selF.p*r).toFixed(1),f:+(selF.f*r).toFixed(1),cal:Math.round(selF.cal*r)};
+  const log=LS.get('food-'+ds(),[]);log.push(e);LS.set('food-'+ds(),log);
+  selF=null;G('fSrc').value='';G('fQty').value='';G('qLbl').textContent='份量';
+  renderDiet();renderToday();
+}
+
+// Custom food
+function addCustomFood(){
+  const name=G('nf-n').value.trim(),per=parseFloat(G('nf-q').value)||100,unit=G('nf-u').value.trim()||'g';
+  const c=parseFloat(G('nf-c').value)||0,p=parseFloat(G('nf-p').value)||0,f=parseFloat(G('nf-f').value)||0;
+  if(!name)return alert('請輸入食物名稱');
+  const cal=Math.round(c*4+p*4+f*9);
+  const customs=LS.get('customFoods',[]);
+  customs.push({name,unit,per,c,p,f,cal,custom:true,id:Date.now()});
+  LS.set('customFoods',customs);
+  G('nf-n').value='';G('nf-q').value='';G('nf-u').value='';G('nf-c').value='';G('nf-p').value='';G('nf-f').value='';
+  G('calPreview').textContent=`✅ 已新增！${cal}kcal`;
+  setTimeout(()=>G('calPreview').textContent='熱量將自動計算',2000);
+  renderCustomFoods();
+}
+function delCustomFood(id){if(!confirm('刪除此食物？'))return;LS.set('customFoods',LS.get('customFoods',[]).filter(f=>f.id!==id));renderCustomFoods();}
+function toggleCustomFoods(){const el=G('customFoodList');el.style.display=el.style.display==='none'?'block':'none';if(el.style.display==='block')renderCustomFoods();}
+function renderCustomFoods(){
+  const cf=LS.get('customFoods',[]);
+  G('customFoodList').innerHTML=!cf.length?'<div style="font-size:12px;color:var(--dim);text-align:center;padding:8px">尚無自訂食物</div>':
+    '<div class="card">'+cf.map(f=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--brd)"><div><div style="font-size:13px;font-weight:500">${f.name}</div><div style="font-size:11px;color:var(--muted)">每${f.per}${f.unit} · ${f.cal}kcal</div></div><span style="color:var(--red);cursor:pointer;font-size:16px" onclick="delCustomFood(${f.id})">✕</span></div>`).join('')+'</div>';
+}
+// Cal preview
+document.addEventListener('input',e=>{
+  if(['nf-c','nf-p','nf-f'].includes(e.target.id)){
+    const c=parseFloat(G('nf-c').value)||0,p=parseFloat(G('nf-p').value)||0,f=parseFloat(G('nf-f').value)||0;
+    const cal=Math.round(c*4+p*4+f*9);
+    if(G('calPreview'))G('calPreview').textContent=`預估熱量：${cal} kcal`;
+  }
+});
+
+function renderDiet(){
+  const tip=DIET_TIPS[dayType];
+  G('dietTip').innerHTML=`<div class="dtip ${tip.cls}"><div class="dt-h">${tip.icon} ${tip.title}</div><div class="dt-b">${tip.body}</div></div>`;
+  const m=MACROS[dayType],fl=getFoodTotals(ds());
+  G('dietTarget').innerHTML=`<div class="ct">今日目標</div>`
+    +[['碳水',fl.c,m.carb,'#2858b8'],['蛋白質',fl.p,m.prot,'#1e8c48'],['油脂',fl.f,m.fat,'#8e5210']].map(([l,v,t,c])=>`<div class="mp-item"><div class="mp-top"><span style="color:var(--muted)">${l}</span><span><strong style="color:${c}">${v.toFixed(0)}</strong><span style="color:var(--dim)"> / ${t}g</span></span></div><div class="mpb"><div class="mpf" style="width:${Math.min(100,v/t*100).toFixed(0)}%;background:${c}"></div></div></div>`).join('')
+    +`<div class="div"></div><div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--muted)">總熱量</span><strong>${Math.round(fl.cal)} / ${m.kcal} kcal</strong></div>`;
+  const log=LS.get('food-'+ds(),[]);
+  G('foodLog').innerHTML=!log.length?'<div style="text-align:center;color:var(--dim);font-size:12px;padding:8px">尚無記錄</div>':
+    log.map(e=>`<div class="food-row"><div><div style="font-weight:500">${e.name} <span style="font-size:11px;color:var(--muted)">${e.qty}${e.unit}</span></div><div style="font-size:11px;color:var(--muted)">碳${e.c}g 蛋${e.p}g 脂${e.f}g · ${e.cal}kcal</div></div><span style="color:var(--red);cursor:pointer;font-size:16px;padding:0 4px" onclick="delFood(${e.id})">✕</span></div>`).join('');
+}
+
+// ─── SLEEP ─────────────────────────────────────────────────────────
+let sq=0;
+function sSQ(n){sq=n;G('sqrow').querySelectorAll('.sq').forEach((s,i)=>s.classList.toggle('on',i<n));}
+function saveSleep(){
+  const b=G('sl-b').value,w=G('sl-w').value;if(!b||!w)return alert('請填入時間');
+  let[bh,bm]=b.split(':').map(Number),[wh,wm]=w.split(':').map(Number);let dur=(wh*60+wm)-(bh*60+bm);if(dur<0)dur+=1440;
+  const log=LS.get('sleeplog',[]);
+  log.unshift({id:Date.now(),date:ds(),bed:b,wake:w,hrs:+(dur/60).toFixed(1),q:sq,note:G('sl-n').value.trim()});
+  LS.set('sleeplog',log.slice(0,30));G('sl-n').value='';sq=0;sSQ(0);
+  renderSleep();renderPersonal();renderToday();
+}
+function delSleep(id){if(!confirm('刪除？'))return;LS.set('sleeplog',LS.get('sleeplog',[]).filter(s=>s.id!==id));renderSleep();renderPersonal();}
+function renderSleep(){
+  const log=LS.get('sleeplog',[]);
+  if(!log.length){G('sleepLog').innerHTML='<div style="text-align:center;color:var(--dim);font-size:12px;padding:10px">尚無記錄</div>';return;}
+  const avg7=(log.slice(0,7).reduce((s,l)=>s+l.hrs,0)/Math.min(7,log.length)).toFixed(1);
+  const ql=['','很差','差','普通','好','很好'],qc=['','#c02828','#8e5210','var(--muted)','#1e8c48','#1e8c48'];
+  G('sleepLog').innerHTML=`<div style="font-size:12px;color:var(--muted);margin-bottom:10px">近7日均 <strong style="color:${parseFloat(avg7)>=7.5?'var(--green)':'var(--amber)'}">${avg7}小時</strong></div>`
+    +log.slice(0,14).map(s=>`<div class="sl-row"><div><div>${s.date} <span style="font-size:11px;color:var(--muted)">${s.bed}→${s.wake}</span></div>${s.note?`<div style="font-size:11px;color:var(--dim)">${s.note}</div>`:''}</div><div style="display:flex;align-items:center;gap:8px"><strong style="color:${parseFloat(s.hrs)>=7.5?'var(--green)':'var(--amber)'}">${s.hrs}h</strong>${s.q?`<span style="font-size:11px;color:${qc[s.q]}">${ql[s.q]}</span>`:''}<span style="color:var(--red);cursor:pointer" onclick="delSleep(${s.id})">✕</span></div></div>`).join('');
+}
+
+// ─── PERSONAL ──────────────────────────────────────────────────────
+let chartType='weight';
+const SDEFS=[{key:'weight',lbl:'體重',unit:'kg',col:'var(--blue)',def:47},{key:'bodyFat',lbl:'體脂率',unit:'%',col:'var(--pink)',def:29},{key:'restHR',lbl:'靜態心率',unit:'bpm',col:'var(--amber)',def:0}];
+function getStatHistory(){const h=LS.get('statHistory',[]);return h.length?h:[{date:'2026-05-05',weight:47,bodyFat:29,restHR:0}];}
+function editStat(key){
+  const last=getStatHistory()[0],def=SDEFS.find(s=>s.key===key);
+  G('editStatWrap').style.display='block';
+  G('editStatCard').innerHTML=`<label class="lbl">更新 ${def.lbl}（${def.unit}）</label><input type="number" step="0.1" class="inp" id="esv" value="${last[key]||''}"><div class="r2"><button class="btn" style="background:var(--bg3);color:var(--muted)" onclick="G('editStatWrap').style.display='none'">取消</button><button class="btn btn-g" onclick="saveStatEdit('${key}')">儲存</button></div>`;
+  G('esv').focus();
+}
+function saveStatEdit(key){
+  const val=parseFloat(G('esv').value);if(isNaN(val))return alert('請輸入數值');
+  const hist=getStatHistory(),entry=hist[0].date===ds()?{...hist[0]}:{...hist[0],date:ds()};
+  entry[key]=val;
+  if(hist[0].date===ds()) hist[0]=entry;else hist.unshift(entry);
+  LS.set('statHistory',hist.slice(0,60));G('editStatWrap').style.display='none';renderPersonal();
+}
+function setChart(t,b){chartType=t;G('pnl-personal').querySelectorAll('.chart-tog .togb').forEach(x=>x.classList.remove('on'));b.classList.add('on');drawChart();}
+function drawChart(){
+  const hist=getStatHistory().slice(0,20).reverse();
+  let vals=[],dates=[],lbl='',col='';
+  if(chartType==='weight'){vals=hist.map(h=>h.weight||0);dates=hist.map(h=>h.date.slice(5));lbl='體重 (kg)';col='#2858b8';}
+  else if(chartType==='bodyFat'){vals=hist.map(h=>h.bodyFat||0);dates=hist.map(h=>h.date.slice(5));lbl='體脂率 (%)';col='#b03256';}
+  else{const sl=LS.get('sleeplog',[]).slice(0,20).reverse();vals=sl.map(s=>s.hrs);dates=sl.map(s=>s.date.slice(5));lbl='睡眠 (h)';col='#1e8c48';}
+  G('chartLbl').textContent=lbl;
+  const svg=G('chartSvg'),W=svg.clientWidth||340,H=90;
+  const vs=vals.filter(v=>v>0);if(!vs.length){svg.innerHTML=`<text x="50%" y="50%" text-anchor="middle" fill="#b4b0c8" font-size="12">尚無資料</text>`;return;}
+  const mn=Math.min(...vs)*0.97,mx=Math.max(...vs)*1.03+.01,n=vals.length;
+  const xS=n>1?(W-30)/(n-1):0,toY=v=>(1-(v-mn)/(mx-mn))*(H-22)+4,toX=(_,i)=>15+i*xS;
+  const path=vals.map((v,i)=>`${i===0?'M':'L'}${toX(v,i).toFixed(1)} ${toY(v).toFixed(1)}`).join(' ');
+  const fill=`${path} L${toX(0,n-1).toFixed(1)} ${H} L15 ${H} Z`;
+  svg.setAttribute('height',H);
+  svg.innerHTML=`<defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${col}" stop-opacity=".2"/><stop offset="100%" stop-color="${col}" stop-opacity="0"/></linearGradient></defs>
+    <path d="${fill}" fill="url(#cg)"/>
+    <path d="${path}" fill="none" stroke="${col}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+    ${vals.map((v,i)=>`<circle cx="${toX(v,i).toFixed(1)}" cy="${toY(v).toFixed(1)}" r="3.5" fill="${col}"/>`).join('')}
+    ${vals.map((v,i)=>{if(!v)return'';const x=toX(v,i),y=toY(v),yy=y<16?y+14:y-7,xx=i===0?x+4:i===n-1?x-4:x,anchor=i===0?'start':i===n-1?'end':'middle';return`<text x="${xx.toFixed(0)}" y="${yy.toFixed(0)}" text-anchor="${anchor}" font-size="9" fill="${col}">${v.toFixed(1)}</text>`;}).join('')}
+    ${dates[0]?`<text x="15" y="${H}" font-size="9" fill="#b4b0c8">${dates[0]}</text>`:''}
+    ${dates[n-1]?`<text x="${(W-5).toFixed(0)}" y="${H}" text-anchor="end" font-size="9" fill="#b4b0c8">${dates[n-1]}</text>`:''}`;
+}
+function togglePF(){const w=G('pfWrap');w.style.display=w.style.display==='none'?'block':'none';if(w.style.display==='block')G('pf-d').value=ds();}
+function savePeriod(){
+  const date=G('pf-d').value,days=parseInt(G('pf-dy').value)||4;
+  if(!date)return alert('請選擇日期');
+  const p=getPeriods().filter(x=>x.date!==date);p.unshift({date,days});
+  p.sort((a,b)=>new Date(b.date)-new Date(a.date));
+  LS.set('periods',p);G('pfWrap').style.display='none';renderPersonal();renderToday();
+}
+function delPeriod(date){if(!confirm('刪除？'))return;const p=getPeriods().filter(x=>x.date!==date);LS.set('periods',p.length?p:[{date:'2026-04-24',days:4}]);renderPersonal();}
+
+function renderPersonal(){
+  const hist=getStatHistory(),last=hist[0];
+  G('statsGrid').innerHTML=SDEFS.map(s=>`<div class="sp"><div class="sp-v" style="color:${s.col}">${last[s.key]||'—'}</div><div class="sp-u">${s.unit}</div><div class="sp-l">${s.lbl}</div><span class="sp-e" onclick="editStat('${s.key}')">✏️ 更新</span></div>`).join('')
+    +`<div class="sp"><div class="sp-v" style="color:var(--green)">186</div><div class="sp-u">bpm</div><div class="sp-l">最大心率</div></div>`
+    +`<div class="sp"><div class="sp-v" style="color:var(--blue)">29</div><div class="sp-u">天</div><div class="sp-l">週期</div></div>`
+    +`<div class="sp"><div class="sp-v" style="color:var(--muted)">31</div><div class="sp-u">歲</div><div class="sp-l">年齡</div></div>`;
+  drawChart();
+  const periods=getPeriods(),len=LS.get('cycleLen',29);
+  let ph='';
+  periods.slice(0,5).forEach(p=>{ph+=`<div class="p-row"><div class="dot" style="background:var(--pink)"></div><div style="flex:1"><strong style="font-size:13px">${p.date}</strong> <span style="font-size:12px;color:var(--muted)">· ${p.days}天</span></div><span style="color:var(--red);cursor:pointer" onclick="delPeriod('${p.date}')">✕</span></div>`;});
+  const l=getLatest();for(let i=1;i<=4;i++){const pr=new Date(l.date);pr.setDate(pr.getDate()+len*i);const dateStr=pr.toISOString().slice(0,10);const rw=Math.abs(db(pr,RACE))<=7;ph+=`<div class="p-row"><div class="dot" style="background:var(--dim)"></div><div style="flex:1"><span style="font-size:13px;color:var(--muted)">${dateStr} 預估</span>${rw?`<div style="font-size:11px;color:var(--pink)">⚠️ 接近比賽日</div>`:''}</div></div>`;}
+  G('periodList').innerHTML=`<div class="ct">記錄 + 預測（週期 ${len} 天）</div>${ph}`;
+  const zones=[['Z2 輕鬆跑','65–75%',121,139,'#2858b8'],['Z3 節奏跑','76–84%',140,155,'#1e8c48'],['Z4 閾值跑','85–90%',156,167,'#8e5210'],['Z5 衝刺','91–100%',168,186,'#c02828']];
+  G('hrZones').innerHTML=`<div class="ct">最大心率 186 bpm（Tanaka · 31歲）</div>`+zones.map(([n,p,lo,hi,c])=>`<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--brd)"><div style="width:8px;height:8px;border-radius:50%;background:${c}"></div><div style="flex:1;font-size:12px">${n}</div><div style="font-size:12px;color:var(--muted)">${lo}–${hi} bpm</div></div>`).join('');
+  const kws=[
+    {t:'🛁 泡澡建議',b:'熱水（38–40°C）訓練後 1 小時以上。加瀉鹽補鎂，15 分鐘。長跑後先沖涼水腿部 2 分鐘。訓練後 30 分鐘內避免泡熱水。經期第 1–2 天水溫 ≤37°C。'},
+    {t:'🧘 皮拉提斯評估',b:'7 月初（16 堂後）：① 棒式 60 秒 ② 跑步骨盆穩 ③ 酸痛恢復更快 ④ 感受核心在運作。兩項以上 → 值得每週一次維持。'},
+    {t:'🌙 月經期訓練',b:'第 1–2 天：散步 / 伸展。第 3–4 天：輕鬆跑或瑜珈，強度降 50%。長跑若撞到前兩天：推後一天或縮短距離。補鐵補鎂。'},
+    {t:'🏃 室外跑 vs 跑步機',b:'長跑（10k+）室外為主。短跑 4–6k 跑步機 OK。節奏跑跑步機可精確控速。台灣夏天早上 6 點前完成。'},
+    {t:'💊 比賽日週期',b:'依 4/24 推算，9/20 可能是月經第 4–5 天（±6 天）。7 月可判斷方向。確認撞到 → 提前 2 個月諮詢婦科。'},
+    {t:'🥗 賽前飲食',b:'賽前 3 天：碳水 180–200g（碳水負載）。賽前晚：地瓜飯+雞肉。比賽早餐：出發前 2 小時，燕麥/吐司+蛋。每 45–60 分一包能量膠。'},
+  ];
+  G('knowBase').innerHTML=kws.map((k,i)=>`<div class="kc"><div class="kc-h" onclick="tkn(${i})"><span class="kc-t">${k.t}</span><span id="ka-${i}">▸</span></div><div class="kc-b" id="kb-${i}">${k.b}</div></div>`).join('');
+}
+function tkn(i){const b=G(`kb-${i}`),a=G(`ka-${i}`),o=b.classList.toggle('open');a.textContent=o?'▾':'▸';}
+
+// ─── NAV + HASH ─────────────────────────────────────────────────────
+function go(id,btn){
+  document.querySelectorAll('.pnl').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
+  G('pnl-'+id).classList.add('on');btn.classList.add('on');
+  history.replaceState(null,'','#'+id);
+  if(id==='today')    renderToday();
+  if(id==='schedule') renderSchedule();
+  if(id==='diet')     renderDiet();
+  if(id==='sleep')    renderSleep();
+  if(id==='personal') renderPersonal();
+}
+
+// ─── INIT ───────────────────────────────────────────────────────────
+const hash=location.hash.slice(1);
+renderToday();
+if(['schedule','diet','sleep','personal'].includes(hash)){
+  const btn=document.querySelector(`.nb[data-tab="${hash}"]`);
+  if(btn) go(hash,btn);
+}
+</script>
+</body>
+</html>
